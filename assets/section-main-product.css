@@ -61,31 +61,25 @@ product-info {
 }
 
 @media screen and (min-width: 990px) {
-  .product--large:not(.product--no-media) .product__media-wrapper {
-    max-width: 65%;
-    width: calc(65% - var(--grid-desktop-horizontal-spacing) / 2);
-  }
-
-  .product--large:not(.product--no-media) .product__info-wrapper {
-    padding: 0 0 0 4rem;
-    max-width: 35%;
-    width: calc(35% - var(--grid-desktop-horizontal-spacing) / 2);
-  }
-
-  .product--large:not(.product--no-media).product--right .product__info-wrapper {
-    padding: 0 4rem 0 0;
-  }
-
+  .product--large:not(.product--no-media) .product__media-wrapper,
   .product--medium:not(.product--no-media) .product__media-wrapper,
-  .product--small:not(.product--no-media) .product__info-wrapper {
-    max-width: 55%;
-    width: calc(55% - var(--grid-desktop-horizontal-spacing) / 2);
+  .product--small:not(.product--no-media) .product__media-wrapper {
+    max-width: 50%;
+    width: calc(50% - var(--grid-desktop-horizontal-spacing) / 2);
   }
 
+  .product--large:not(.product--no-media) .product__info-wrapper,
   .product--medium:not(.product--no-media) .product__info-wrapper,
-  .product--small:not(.product--no-media) .product__media-wrapper {
-    max-width: 45%;
-    width: calc(45% - var(--grid-desktop-horizontal-spacing) / 2);
+  .product--small:not(.product--no-media) .product__info-wrapper {
+    padding: 0 0 0 4rem;
+    max-width: 50%;
+    width: calc(50% - var(--grid-desktop-horizontal-spacing) / 2);
+  }
+
+  .product--large:not(.product--no-media).product--right .product__info-wrapper,
+  .product--medium:not(.product--no-media).product--right .product__info-wrapper,
+  .product--small:not(.product--no-media).product--right .product__info-wrapper {
+    padding: 0 4rem 0 0;
   }
 }
 
@@ -172,7 +166,7 @@ product-info {
   flex: 0 0 100%;
   padding: 0;
   margin: 0 0 1.2rem 0;
-  max-width: 44rem;
+  max-width: 100%;
   min-width: fit-content;
   border: none;
 }
@@ -289,7 +283,7 @@ a.product__text {
 
 @media screen and (min-width: 750px) {
   .product__info-container {
-    max-width: 60rem;
+    max-width: 100%;
   }
 
   .product__info-container .price--on-sale .price-item--regular {
@@ -364,7 +358,7 @@ a.product__text {
 }
 
 .product-form__buttons {
-  max-width: 44rem;
+  max-width: 100%;
 }
 
 .product--no-media .product__info-container > modal-opener {
@@ -1376,7 +1370,7 @@ a.product__text {
 
   display: block;
   position: relative;
-  max-width: 44rem;
+  max-width: 100%;
   margin-bottom: 2.5rem;
 }
 
