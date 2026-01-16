@@ -1,0 +1,102 @@
+{% doc %}
+  Renders a Trustpilot rating widget with customizable text, stars image, review count, and logo.
+
+  @param {block} block - The block object containing settings
+
+  @example
+  {% render 'trustpilot-rating', block: block %}
+{% enddoc %}
+
+<div class="trustpilot-rating" {{ block.shopify_attributes }}>
+  <div class="trustpilot-rating__content">
+    {%- if block.settings.rating_text != blank -%}
+      <span class="trustpilot-rating__text">{{ block.settings.rating_text }}</span>
+    {%- endif -%}
+
+    {%- if block.settings.rating_description != blank -%}
+      <span class="trustpilot-rating__description">{{ block.settings.rating_description }}</span>
+    {%- endif -%}
+
+    {%- if block.settings.stars_image != blank -%}
+      <div class="trustpilot-rating__stars">
+        {{ block.settings.stars_image | image_url: width: 120 | image_tag: alt: 'Rating stars', loading: 'lazy' }}
+      </div>
+    {%- endif -%}
+
+    {%- if block.settings.review_count_text != blank -%}
+      <span class="trustpilot-rating__count">{{ block.settings.review_count_text }}</span>
+    {%- endif -%}
+
+    {%- if block.settings.trustpilot_logo != blank -%}
+      <div class="trustpilot-rating__logo">
+        {{ block.settings.trustpilot_logo | image_url: width: 100 | image_tag: alt: 'Trustpilot', loading: 'lazy' }}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .trustpilot-rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .trustpilot-rating__content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .trustpilot-rating__text {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.4rem;
+  }
+
+  .trustpilot-rating__description {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .trustpilot-rating__stars {
+    display: flex;
+    align-items: center;
+  }
+
+  .trustpilot-rating__stars img {
+    height: 20px;
+    width: auto;
+  }
+
+  .trustpilot-rating__count {
+    font-weight: 700;
+    color: #333;
+    font-size: 1.4rem;
+  }
+
+  .trustpilot-rating__logo {
+    display: flex;
+    align-items: center;
+  }
+
+  .trustpilot-rating__logo img {
+    height: 20px;
+    width: auto;
+  }
+
+  @media screen and (max-width: 749px) {
+    .trustpilot-rating__content {
+      gap: 0.5rem;
+    }
+
+    .trustpilot-rating__text {
+      font-size: 1.2rem;
+    }
+
+    .trustpilot-rating__count {
+      font-size: 1.2rem;
+    }
+  }
+{% endstylesheet %}

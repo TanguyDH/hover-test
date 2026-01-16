@@ -12,8 +12,26 @@
     "main": {
       "type": "main-product",
       "blocks": {
+        "trustpilot_rating_DBzJXX": {
+          "type": "trustpilot_rating",
+          "settings": {
+            "rating_text": "Excellent",
+            "rating_description": "",
+            "stars_image": "shopify://shop_images/Trustpilot_-_etoiles.png",
+            "review_count_text": "17.102 avis",
+            "trustpilot_logo": "shopify://shop_images/Trustpilot_-_logo.png"
+          }
+        },
         "title": {
           "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "description": {
+          "type": "description",
           "settings": {}
         },
         "caption": {
@@ -22,10 +40,6 @@
             "text": "{{ product.metafields.descriptors.subtitle.value }}",
             "text_style": "subtitle"
           }
-        },
-        "price": {
-          "type": "price",
-          "settings": {}
         },
         "variant_picker": {
           "type": "variant_picker",
@@ -40,10 +54,6 @@
             "show_dynamic_checkout": false,
             "show_gift_card_recipient": true
           }
-        },
-        "description": {
-          "type": "description",
-          "settings": {}
         },
         "collapsible-row-0": {
           "type": "collapsible_tab",
@@ -92,6 +102,7 @@
         }
       },
       "block_order": [
+        "trustpilot_rating_DBzJXX",
         "title",
         "price",
         "description",

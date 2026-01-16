@@ -1945,6 +1945,28 @@
             }
           }
         },
+        "trustpilot_rating": {
+          "name": "Trustpilot rating",
+          "settings": {
+            "rating_text": {
+              "label": "Rating text",
+              "default": "Excellent"
+            },
+            "rating_description": {
+              "label": "Description"
+            },
+            "stars_image": {
+              "label": "Stars image"
+            },
+            "review_count_text": {
+              "label": "Review count text",
+              "default": "17.102 avis"
+            },
+            "trustpilot_logo": {
+              "label": "Trustpilot logo"
+            }
+          }
+        },
         "title": {
           "name": "Title"
         },

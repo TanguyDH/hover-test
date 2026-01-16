@@ -96,6 +96,8 @@
                 >
                   {{- block.settings.text -}}
                 </p>
+              {%- when 'trustpilot_rating' -%}
+                {%- render 'trustpilot-rating', block: block -%}
               {%- when 'title' -%}
                 <div class="product__title-wrapper">
                   <div class="product__title" {{ block.shopify_attributes }}>
@@ -778,6 +780,39 @@
           ],
           "default": "body",
           "label": "t:sections.main-product.blocks.text.settings.text_style.label"
+        }
+      ]
+    },
+    {
+      "type": "trustpilot_rating",
+      "name": "t:sections.main-product.blocks.trustpilot_rating.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "rating_text",
+          "label": "t:sections.main-product.blocks.trustpilot_rating.settings.rating_text.label",
+          "default": "Excellent"
+        },
+        {
+          "type": "text",
+          "id": "rating_description",
+          "label": "t:sections.main-product.blocks.trustpilot_rating.settings.rating_description.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "stars_image",
+          "label": "t:sections.main-product.blocks.trustpilot_rating.settings.stars_image.label"
+        },
+        {
+          "type": "text",
+          "id": "review_count_text",
+          "label": "t:sections.main-product.blocks.trustpilot_rating.settings.review_count_text.label",
+          "default": "17.102 avis"
+        },
+        {
+          "type": "image_picker",
+          "id": "trustpilot_logo",
+          "label": "t:sections.main-product.blocks.trustpilot_rating.settings.trustpilot_logo.label"
         }
       ]
     },
