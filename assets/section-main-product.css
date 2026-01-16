@@ -233,6 +233,7 @@ product-info {
 
 .product__title-wrapper .product__title h1 {
   margin: 0;
+  font-weight: 700;
 }
 
 .product__title-wrapper [id^="price-"] {
@@ -240,6 +241,15 @@ product-info {
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  font-weight: 700;
+}
+
+.product__title-wrapper [id^="price-"] .price {
+  font-weight: 700;
+}
+
+.product__title-wrapper [id^="price-"] .price * {
+  font-weight: 700;
 }
 
 .product__info-container iframe {
