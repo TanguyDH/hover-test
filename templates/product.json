@@ -93,11 +93,11 @@
       },
       "block_order": [
         "title",
-        "caption",
         "price",
+        "description",
+        "caption",
         "variant_picker",
         "buy_buttons",
-        "description",
         "collapsible-row-0",
         "collapsible-row-1",
         "collapsible-row-2",
