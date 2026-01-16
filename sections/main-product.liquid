@@ -37,6 +37,30 @@
         padding-bottom: {{ section.settings.padding_bottom }}px;
       }
     }
+
+    .product__description ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .product__description ul li {
+      position: relative;
+      padding-left: 2.2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .product__description ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.4rem;
+      width: 1.8rem;
+      height: 1.8rem;
+      background-image: url('{{ "icon-check.svg" | asset_url }}');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
   {%- endstyle -%}
 
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
