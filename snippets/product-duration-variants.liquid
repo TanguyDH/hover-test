@@ -157,12 +157,19 @@
   }
 
   .duration-variant-card__badge--discovery {
-    background-color: #c8e4e6;
+    background-color: #e5e5e5;
     color: #000;
   }
 
   .duration-variant-card__badge--best {
-    background-color: #f3f3f3;
+    background-color: #e5e5e5;
+    color: #000;
+  }
+
+  /* Green background when variant is selected */
+  .duration-variant-card:has(.duration-variant-card__input:checked) .duration-variant-card__badge--discovery,
+  .duration-variant-card:has(.duration-variant-card__input:checked) .duration-variant-card__badge--best {
+    background-color: #c8e4e6;
     color: #000;
   }
 
