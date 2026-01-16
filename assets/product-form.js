@@ -132,6 +132,11 @@ if (!customElements.get('product-form')) {
           this.submitButton.removeAttribute('disabled');
           this.submitButtonText.textContent = window.variantStrings.addToCart;
         }
+        // Ensure styles are preserved after text update
+        if (this.submitButtonText) {
+          this.submitButtonText.style.setProperty('font-weight', '600', 'important');
+          this.submitButtonText.style.setProperty('font-family', 'inherit', 'important');
+        }
       }
 
       get variantIdInput() {

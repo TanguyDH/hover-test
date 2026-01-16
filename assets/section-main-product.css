@@ -185,6 +185,101 @@ product-info {
 
 .product-form__submit {
   margin-bottom: 1rem;
+  border-radius: 9999px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.product-form__submit:before,
+.product-form__submit:after {
+  display: none !important;
+  content: none !important;
+  box-shadow: none !important;
+}
+
+.product-form__submit-content {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.product-form__submit-text {
+  font-weight: 600 !important;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.product-form__submit-text * {
+  font-weight: 600 !important;
+}
+
+.product-form__submit-separator {
+  color: #fff;
+  margin: 0 0.3rem;
+  opacity: 0.7;
+  display: inline-block !important;
+  visibility: visible !important;
+  font-weight: 600 !important;
+  font-family: inherit;
+}
+
+.product-form__submit-price {
+  color: #fff !important;
+  font-weight: 600 !important;
+  white-space: nowrap;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-family: inherit;
+}
+
+.product-form__submit[disabled] .product-form__submit-separator,
+.product-form__submit[disabled] .product-form__submit-price,
+.product-form__submit[aria-disabled='true'] .product-form__submit-separator,
+.product-form__submit[aria-disabled='true'] .product-form__submit-price {
+  display: none;
+}
+
+/* Hide all button content during loading */
+.product-form__submit.loading .product-form__submit-content {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.product-form__submit.loading .product-form__submit-separator,
+.product-form__submit.loading .product-form__submit-price {
+  display: none !important;
+}
+
+/* Delivery info */
+.product-form__delivery-info {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+.product-form__delivery-text {
+  display: block;
+}
+
+.product-form__delivery-stock {
+  font-weight: 600;
+}
+
+.product-form__delivery-label {
+  font-weight: 600;
+}
+
+.product-form__delivery-date {
+  font-weight: 600;
 }
 
 .product-form__submit[aria-disabled='true'] + .shopify-payment-button .shopify-payment-button__button[disabled],

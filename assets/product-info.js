@@ -26,7 +26,33 @@ if (!customElements.get('product-info')) {
         );
 
         this.initQuantityHandlers();
+        this.setupButtonStyleObserver();
+        this.updateDeliveryDate();
         this.dispatchEvent(new CustomEvent('product-info:loaded', { bubbles: true }));
+      }
+
+      setupButtonStyleObserver() {
+        // Observe changes to the button and reapply styles
+        const button = this.querySelector('.product-form__submit');
+        if (!button) return;
+
+        const observer = new MutationObserver(() => {
+          this.ensureButtonTextStyles();
+        });
+
+        observer.observe(button, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['class'],
+        });
+
+        // Also observe variant changes
+        this.variantChangeUnsubscriber = subscribe(PUB_SUB_EVENTS.variantChange, () => {
+          setTimeout(() => {
+            this.ensureButtonTextStyles();
+          }, 50);
+        });
       }
 
       addPreProcessCallback(callback) {
@@ -48,6 +74,7 @@ if (!customElements.get('product-info')) {
       disconnectedCallback() {
         this.onVariantChangeUnsubscriber();
         this.cartUpdateUnsubscriber?.();
+        this.variantChangeUnsubscriber?.();
       }
 
       initializeProductSwapUtility() {
@@ -199,6 +226,29 @@ if (!customElements.get('product-info')) {
           updateSourceFromDestination('Inventory', ({ innerText }) => innerText === '');
           updateSourceFromDestination('Volume');
           updateSourceFromDestination('Price-Per-Item', ({ classList }) => classList.contains('hidden'));
+          updateSourceFromDestination('ProductSubmitButtonPrice');
+
+          // Update delivery info from new HTML
+          const updatedDeliveryInfo = html.querySelector(
+            `.product-form__delivery-info[data-section-id="${this.sectionId}"]`
+          );
+          const currentDeliveryInfo = this.querySelector(
+            `.product-form__delivery-info[data-section-id="${this.dataset.section}"]`
+          );
+          if (updatedDeliveryInfo && currentDeliveryInfo) {
+            currentDeliveryInfo.setAttribute(
+              'data-delivery-days',
+              updatedDeliveryInfo.getAttribute('data-delivery-days') || '0'
+            );
+            this.updateDeliveryDate();
+          }
+
+          // Update button price directly from variant data
+          // Use setTimeout to ensure DOM is updated
+          setTimeout(() => {
+            this.updateButtonPrice(variant, html);
+            this.ensureButtonTextStyles();
+          }, 0);
 
           this.updateQuantityRules(this.sectionId, html);
           this.querySelector(`#Quantity-Rules-${this.dataset.section}`)?.classList.remove('hidden');
@@ -211,6 +261,21 @@ if (!customElements.get('product-info')) {
             shouldDisable,
             shouldDisable ? window.variantStrings.soldOut : undefined
           );
+
+          // Ensure price is visible after button text update
+          if (!shouldDisable && variant) {
+            setTimeout(() => {
+              this.updateButtonPrice(variant, html);
+              this.ensureButtonTextStyles();
+              this.updateDeliveryDate();
+            }, 10);
+          } else {
+            // Ensure styles are preserved even when disabled
+            this.ensureButtonTextStyles();
+            // Hide delivery info if variant is unavailable
+            const deliveryInfo = this.querySelector('.product-form__delivery-info');
+            if (deliveryInfo) deliveryInfo.style.display = 'none';
+          }
 
           publish(PUB_SUB_EVENTS.variantChange, {
             data: {
@@ -248,6 +313,148 @@ if (!customElements.get('product-info')) {
           .map((id) => `#${id}-${this.dataset.section}`)
           .join(', ');
         document.querySelectorAll(selectors).forEach(({ classList }) => classList.add('hidden'));
+      }
+
+      updateButtonPrice(variant, html) {
+        const submitContent = this.querySelector('.product-form__submit-content');
+        if (!submitContent) return;
+
+        let priceElement = this.querySelector(`#ProductSubmitButtonPrice-${this.dataset.section}`);
+        let separatorElement = this.querySelector('.product-form__submit-separator');
+
+        if (!variant || !variant.available) {
+          if (priceElement) {
+            priceElement.style.display = 'none';
+            priceElement.textContent = '';
+          }
+          if (separatorElement) separatorElement.style.display = 'none';
+          return;
+        }
+
+        // Create separator if it doesn't exist
+        if (!separatorElement) {
+          separatorElement = document.createElement('span');
+          separatorElement.className = 'product-form__submit-separator';
+          separatorElement.textContent = '|';
+          separatorElement.style.cssText =
+            'font-weight: 600 !important; font-family: inherit; color: #fff; margin: 0 0.3rem; opacity: 0.7; display: inline-block;';
+
+          const submitText = submitContent.querySelector('.product-form__submit-text');
+          if (submitText && submitText.nextSibling) {
+            submitContent.insertBefore(separatorElement, submitText.nextSibling);
+          } else {
+            submitContent.appendChild(separatorElement);
+          }
+        }
+
+        // Create price element if it doesn't exist
+        if (!priceElement) {
+          priceElement = document.createElement('span');
+          priceElement.className = 'product-form__submit-price';
+          priceElement.id = `ProductSubmitButtonPrice-${this.dataset.section}`;
+          priceElement.style.cssText =
+            'font-weight: 600 !important; font-family: inherit; color: #fff !important; white-space: nowrap; display: inline-block;';
+
+          if (separatorElement.nextSibling) {
+            submitContent.insertBefore(priceElement, separatorElement.nextSibling);
+          } else {
+            submitContent.appendChild(priceElement);
+          }
+        }
+
+        // Try to get formatted price from updated HTML first
+        if (html) {
+          const updatedPriceElement = html.getElementById(`ProductSubmitButtonPrice-${this.sectionId}`);
+          if (updatedPriceElement && updatedPriceElement.innerHTML.trim()) {
+            priceElement.innerHTML = updatedPriceElement.innerHTML;
+            priceElement.style.display = 'inline-block';
+            priceElement.style.visibility = 'visible';
+            priceElement.style.opacity = '1';
+            separatorElement.style.display = 'inline-block';
+            separatorElement.style.visibility = 'visible';
+            return;
+          }
+        }
+
+        // Fallback: format price manually if HTML update didn't work
+        if (variant.price !== undefined) {
+          const priceInCents = variant.price;
+          const priceValue = priceInCents / 100;
+          // Format with € symbol, removing any "euro" text
+          const formattedPrice = priceValue.toFixed(2).replace('.', ',') + '€';
+          priceElement.textContent = formattedPrice;
+          priceElement.style.display = 'inline-block';
+          priceElement.style.visibility = 'visible';
+          priceElement.style.opacity = '1';
+        }
+
+        separatorElement.style.display = 'inline-block';
+        separatorElement.style.visibility = 'visible';
+      }
+
+      ensureButtonTextStyles() {
+        // Force styles on all button text elements
+        const submitText = this.querySelector('.product-form__submit-text');
+        if (submitText) {
+          submitText.style.setProperty('font-weight', '600', 'important');
+          submitText.style.setProperty('font-family', 'inherit', 'important');
+          // Also set on any child elements
+          submitText.querySelectorAll('*').forEach((el) => {
+            el.style.setProperty('font-weight', '600', 'important');
+          });
+        }
+        const submitPrice = this.querySelector('.product-form__submit-price');
+        if (submitPrice) {
+          submitPrice.style.setProperty('font-weight', '600', 'important');
+          submitPrice.style.setProperty('font-family', 'inherit', 'important');
+          submitPrice.style.setProperty('color', '#fff', 'important');
+        }
+        const submitSeparator = this.querySelector('.product-form__submit-separator');
+        if (submitSeparator) {
+          submitSeparator.style.setProperty('font-weight', '600', 'important');
+          submitSeparator.style.setProperty('font-family', 'inherit', 'important');
+          submitSeparator.style.setProperty('color', '#fff', 'important');
+        }
+      }
+
+      updateDeliveryDate() {
+        const deliveryInfo = this.querySelector('.product-form__delivery-info');
+        if (!deliveryInfo) return;
+
+        const deliveryDays = parseInt(deliveryInfo.dataset.deliveryDays) || 0;
+        if (deliveryDays === 0) {
+          deliveryInfo.style.display = 'none';
+          return;
+        }
+
+        const deliveryDateElement = deliveryInfo.querySelector('.product-form__delivery-date');
+        if (!deliveryDateElement) return;
+
+        // Calculate delivery date (today + delivery days)
+        const today = new Date();
+        const deliveryDate = new Date(today);
+        deliveryDate.setDate(today.getDate() + deliveryDays);
+
+        // Format date in French (e.g., "25 mars")
+        const months = [
+          'janvier',
+          'février',
+          'mars',
+          'avril',
+          'mai',
+          'juin',
+          'juillet',
+          'août',
+          'septembre',
+          'octobre',
+          'novembre',
+          'décembre',
+        ];
+        const day = deliveryDate.getDate();
+        const month = months[deliveryDate.getMonth()];
+
+        deliveryDateElement.textContent = `${day} ${month}`;
+        deliveryInfo.style.display = 'block';
       }
 
       updateMedia(html, variantFeaturedMediaId) {

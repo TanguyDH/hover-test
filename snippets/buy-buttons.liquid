@@ -82,13 +82,35 @@
               disabled
             {% endif %}
           >
-            <span>
-              {%- if product.selected_or_first_available_variant == null -%}
-                {{ 'products.product.unavailable' | t }}
-              {%- elsif product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
-                {{ 'products.product.sold_out' | t }}
-              {%- else -%}
-                {{ 'products.product.add_to_cart' | t }}
+            <span class="product-form__submit-content">
+              <span class="product-form__submit-text" style="font-weight: 600 !important; font-family: inherit;">
+                {%- if product.selected_or_first_available_variant == null -%}
+                  {{ 'products.product.unavailable' | t }}
+                {%- elsif product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
+                  {{ 'products.product.sold_out' | t }}
+                {%- else -%}
+                  {{ 'products.product.add_to_cart' | t }}
+                {%- endif -%}
+              </span>
+              {%- if product.selected_or_first_available_variant != null
+                and product.selected_or_first_available_variant.available != false
+              -%}
+                <span
+                  class="product-form__submit-separator"
+                  style="font-weight: 600 !important; font-family: inherit; color: #fff; margin: 0 0.3rem; opacity: 0.7; display: inline-block;"
+                  >|</span
+                >
+                <span
+                  class="product-form__submit-price"
+                  id="ProductSubmitButtonPrice-{{ section_id }}"
+                  style="font-weight: 600 !important; font-family: inherit; color: #fff !important; white-space: nowrap; display: inline-block;"
+                >
+                  {%- liquid
+                    assign price_formatted = product.selected_or_first_available_variant.price | money
+                    assign price_formatted = price_formatted | replace: 'EUR', '€' | replace: 'euro', '€' | replace: 'Euro', '€' | replace: 'EURO', '€'
+                  -%}
+                  {{ price_formatted }}
+                </span>
               {%- endif -%}
             </span>
             {%- render 'loading-spinner' -%}
@@ -97,6 +119,32 @@
             {{ form | payment_button }}
           {%- endif -%}
         </div>
+
+        {%- if product.selected_or_first_available_variant != null
+          and product.selected_or_first_available_variant.available != false
+        -%}
+          {%- liquid
+            assign delivery_days = 0
+            if product.metafields.custom.delivery_time_days.value != blank
+              assign delivery_days = product.metafields.custom.delivery_time_days.value
+            elsif product.metafields.custom.delivery_time_days != blank
+              assign delivery_days = product.metafields.custom.delivery_time_days
+            endif
+          -%}
+          {%- if delivery_days > 0 -%}
+            <div
+              class="product-form__delivery-info"
+              data-delivery-days="{{ delivery_days }}"
+              data-section-id="{{ section_id }}"
+            >
+              <span class="product-form__delivery-text">
+                <span class="product-form__delivery-stock">En stock</span>, commandez maintenant et soyez
+                <span class="product-form__delivery-label">livré le</span>
+                <span class="product-form__delivery-date"></span>
+              </span>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
       {%- endform -%}
     </product-form>
   {%- else -%}
