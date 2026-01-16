@@ -1495,6 +1495,43 @@ a.product__text {
   }
 }
 
+/* Bords arrondis sur toutes les images */
+.product__media-item .product-media-container,
+.product__media-item .media,
+.product__media-item img,
+.product__media-item .product__modal-opener,
+.product__media-item .product__media-toggle,
+.product__media-item .product-media-container .media img,
+.product__media-item .product-media-container .media video,
+.product__media-item .product-media-container .media iframe {
+  border-radius: 0.8rem;
+  overflow: hidden;
+}
+
+/* Hauteur fixe pour toutes les images sauf la première */
+.product__media-list .product__media-item:not(:first-child) {
+  display: block !important;
+}
+
+.product__media-list .product__media-item:not(:first-child) .product-media-container {
+  height: 250px;
+  max-height: 250px;
+}
+
+.product__media-list .product__media-item:not(:first-child) .product-media-container .media {
+  height: 250px;
+  max-height: 250px;
+  padding-top: 0 !important;
+}
+
+.product__media-list .product__media-item:not(:first-child) .product-media-container .media > img,
+.product__media-list .product__media-item:not(:first-child) .product-media-container .media > video,
+.product__media-list .product__media-item:not(:first-child) .product-media-container .media > iframe,
+.product__media-list .product__media-item:not(:first-child) .product-media-container .media > model-viewer {
+  height: 100% !important;
+  object-fit: cover;
+}
+
 /* Recipient form */
 .recipient-form {
   /* (2.88[line-height] - 1.6rem) / 2 */
