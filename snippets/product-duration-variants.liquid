@@ -1,0 +1,218 @@
+{% comment %}
+  Renders duration variant cards (1 mois, 2 mois)
+
+  Accepts:
+  - product: {Object} product object
+  - option: {Object} product option object
+  - block: {Object} block object
+  - product_form_id: {String} product form id
+{% endcomment %}
+
+{%- liquid
+  assign product_form_id = product_form_id | default: 'product-form-' | append: section.id
+-%}
+
+<fieldset class="js product-form__input duration-variants-wrapper">
+  <legend class="visually-hidden">{{ option.name }}</legend>
+  <div class="duration-variants">
+    {%- for value in option.values -%}
+      {%- liquid
+        assign input_id = section.id | append: '-' | append: option.position | append: '-' | append: forloop.index0
+        assign input_name = option.name | append: '-' | append: option.position
+        assign escaped_value = value | escape
+        assign option_disabled = true
+        if value.available
+          assign option_disabled = false
+        endif
+
+        # Find the variant for this option value
+        assign variant_for_option = null
+        assign option_index = option.position | minus: 1
+        for variant in product.variants
+          assign variant_option_value = variant.options[option_index]
+          if variant_option_value == value
+            assign variant_for_option = variant
+            break
+          endif
+        endfor
+
+        # Calculate price per day
+        assign price_per_day_cents = 0
+        if variant_for_option
+          assign value_lower = value | downcase
+          if value_lower contains '1 mois' or value_lower contains '1 month'
+            assign price_per_day_cents = variant_for_option.price | divided_by: 30
+          elsif value_lower contains '2 mois' or value_lower contains '2 months'
+            assign price_per_day_cents = variant_for_option.price | divided_by: 60
+          endif
+        endif
+
+        # Determine card style
+        assign is_first = forloop.first
+        assign is_second = false
+        if forloop.index == 2
+          assign is_second = true
+        endif
+      -%}
+
+      <div class="duration-variant-card {% if is_first %}duration-variant-card--discovery{% elsif is_second %}duration-variant-card--best{% endif %}">
+        <input
+          type="radio"
+          id="{{ input_id }}"
+          name="{{ input_name | escape }}"
+          value="{{ escaped_value }}"
+          form="{{ product_form_id }}"
+          {% if value.selected %}
+            checked
+          {% endif %}
+          {% if option_disabled %}
+            class="disabled"
+          {% endif %}
+          data-product-url="{{ value.product_url }}"
+          data-option-value-id="{{ value.id }}"
+          class="duration-variant-card__input"
+        >
+        <label for="{{ input_id }}" class="duration-variant-card__label">
+          {%- if is_first -%}
+            <span class="duration-variant-card__badge duration-variant-card__badge--discovery">Découverte</span>
+          {%- elsif is_second -%}
+            <span class="duration-variant-card__badge duration-variant-card__badge--best">Meilleure offre</span>
+          {%- endif -%}
+
+          <div class="duration-variant-card__content">
+            <div class="duration-variant-card__duration">{{ value }}</div>
+            {%- if price_per_day_cents > 0 -%}
+              <div class="duration-variant-card__price-per-day">
+                {%- if is_second -%}
+                  <span class="duration-variant-card__discount">-10%</span>
+                {%- endif -%}
+                Soit {{ price_per_day_cents | money }} / jour
+              </div>
+            {%- endif -%}
+          </div>
+        </label>
+      </div>
+    {%- endfor -%}
+  </div>
+</fieldset>
+
+{% stylesheet %}
+  .duration-variants-wrapper {
+    border: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .duration-variants-wrapper legend {
+    display: none;
+  }
+
+  .duration-variants {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .duration-variant-card {
+    position: relative;
+  }
+
+  .duration-variant-card__input {
+    clip: rect(0, 0, 0, 0);
+    overflow: hidden;
+    position: absolute;
+    height: 1px;
+    width: 1px;
+  }
+
+  .duration-variant-card__label {
+    display: block;
+    position: relative;
+    padding: 2.2rem 2rem;
+    border-radius: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: #ffffff;
+  }
+
+  /* Change background color and remove border when selected */
+  .duration-variant-card:has(.duration-variant-card__input:checked) .duration-variant-card__label {
+    background-color: #e2f3f3;
+    border: none;
+  }
+
+  .duration-variant-card__badge {
+    position: absolute;
+    top: -0.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.4rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    z-index: 1;
+    white-space: nowrap;
+  }
+
+  .duration-variant-card__badge--discovery {
+    background-color: #c8e4e6;
+    color: #000;
+  }
+
+  .duration-variant-card__badge--best {
+    background-color: #f3f3f3;
+    color: #000;
+  }
+
+  .duration-variant-card__discount {
+    display: inline-block;
+    background-color: #000;
+    color: #ffffff;
+    padding: 0.2rem 0.8rem;
+    border-radius: 1.6rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-right: 0.8rem;
+    vertical-align: middle;
+  }
+
+  .duration-variant-card__content {
+    margin-top: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .duration-variant-card__duration {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: -0.5rem;
+  }
+
+  .duration-variant-card__price-per-day {
+    font-size: 1.4rem;
+    color: #666;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .duration-variant-card__input:disabled + .duration-variant-card__label,
+  .duration-variant-card__input.disabled + .duration-variant-card__label {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media screen and (max-width: 749px) {
+    .duration-variants {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}

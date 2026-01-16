@@ -63,7 +63,15 @@ if (!customElements.get('product-info')) {
       handleOptionValueChange({ data: { event, target, selectedOptionValues } }) {
         if (!this.contains(event.target)) return;
 
-        this.resetProductFormState();
+        // Only reset form state (disable button) if current variant is unavailable
+        // This prevents disabling the button during variant transitions when variants are available
+        const currentVariant = this.getSelectedVariant(this);
+        if (!currentVariant || currentVariant.available === false) {
+          this.resetProductFormState();
+        } else {
+          // Just clear error messages, but keep button enabled
+          this.productForm?.handleErrorMessage();
+        }
 
         const productUrl = target.dataset.productUrl || this.pendingRequestUrl || this.dataset.url;
         this.pendingRequestUrl = productUrl;
@@ -196,9 +204,12 @@ if (!customElements.get('product-info')) {
           this.querySelector(`#Quantity-Rules-${this.dataset.section}`)?.classList.remove('hidden');
           this.querySelector(`#Volume-Note-${this.dataset.section}`)?.classList.remove('hidden');
 
+          // Only disable button if variant is actually unavailable
+          // Don't disable during transition if variant is available
+          const shouldDisable = variant?.available === false;
           this.productForm?.toggleSubmitButton(
-            html.getElementById(`ProductSubmitButton-${this.sectionId}`)?.hasAttribute('disabled') ?? true,
-            window.variantStrings.soldOut
+            shouldDisable,
+            shouldDisable ? window.variantStrings.soldOut : undefined
           );
 
           publish(PUB_SUB_EVENTS.variantChange, {
